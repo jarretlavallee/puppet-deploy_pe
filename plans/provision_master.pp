@@ -41,7 +41,7 @@ plan deploy_pe::provision_master (
         destination => $tarball_path,
       )
       run_task(
-        'ref_arch_setup::install_pe',
+        'deploy_pe::install_pe',
         $target,
         'Installing PE, this may take a while',
         pe_tarball_path => $tarball_path,
