@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2154
+
 URL=$PT_url
 DESTINATION=$PT_destination
-DESTINATION_DIR=$(dirname $DESTINATION)
+DESTINATION_DIR=$(dirname "$DESTINATION")
 
 function raise_error {
   cat << ERROR_MESSAGE
   { "_error": {
-    "msg": "Task exited 1:\n $1",
+    "msg": "Task exited 1:\\n $1",
     "kind": "deploy_pe/download-error",
     "details": { "exitcode": 1 }
     }
@@ -37,7 +39,7 @@ function download_file {
 }
 
 if [ ! -d "$DESTINATION_DIR" ]; then
-  mkdir -p $DESTINATION_DIR
+  mkdir -p "$DESTINATION_DIR"
 fi
 
 if [ -d "$DESTINATION_DIR" ]; then

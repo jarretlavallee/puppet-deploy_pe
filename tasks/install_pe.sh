@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-TARBALL=$PT_tarball
-PE_CONF=$PT_pe_conf
-TMPDIR=${PT_tmpdir:-$(dirname $PT_tarball)}
-PEDIR=$(dirname $(tar -tf "$PT_tarball" | head -n 1))
+# shellcheck disable=SC2154
+# shellcheck disable=SC2034
+
+TMPDIR=${PT_tmpdir:-$(dirname "$PT_tarball")}
+PEDIR=$(dirname "$(tar -tf "$PT_tarball" | head -n 1)")
 
 
 function raise_error {
   cat << ERROR_MESSAGE
   { "_error": {
-    "msg": "Task exited 1:\n $1",
+    "msg": "Task exited 1:\\n $1",
     "kind": "deploy_pe/install_pe-error",
     "details": { "exitcode": 1 }
     }
@@ -27,16 +28,16 @@ OUTPUT_MESSAGE
 }
 
 function validate_input {
-  if [ ! -e "$TARBALL" ]; then
-    raise_error "Tarball, '$TARBALL', is missing; exiting"
+  if [ ! -e "$PT_tarball" ]; then
+    raise_error "Tarball, '$PT_tarball', is missing; exiting"
   fi
 
-  if [ ! -e "$PE_CONF" ]; then
-    raise_error "pe.conf, '$PE_CONF', is missing; exiting"
+  if [ ! -e "$PT_pe_conf" ]; then
+    raise_error "pe.conf, '$PT_pe_conf', is missing; exiting"
   fi
 
   if [ ! -d "$TMPDIR" ]; then
-    mkdir -p $TMPDIR
+    mkdir -p "$TMPDIR"
     if [ ! -d "$TMPDIR" ]; then
       raise_error "Tmpdir, '$TMPDIR', does not exist and could not be created; exiting"
     fi
@@ -46,7 +47,7 @@ function validate_input {
 
 function execute_command {
     exit_code=${2:-"0"}
-    eval $1
+    eval "$1"
     if [ "$?" -ne "$exit_code" ]
     then
         raise_error "Command '$1' failed; exiting"
@@ -55,13 +56,13 @@ function execute_command {
 
 function extract_tarball {
   # TODO: Ensure tar is installed on the system
-  execute_command "tar -xvf $TARBALL -C $TMPDIR"
+  execute_command "tar -xvf \"$PT_tarball\" -C \"$TMPDIR\""
 }
 
 function run_pe_installer {
 
-  execute_command "chmod +x $TMPDIR/$PEDIR/puppet-enterprise-installer"
-  execute_command "$TMPDIR/$PEDIR/puppet-enterprise-installer -y -c $PE_CONF"
+  execute_command "chmod +x \"$TMPDIR/$PEDIR/puppet-enterprise-installer\""
+  execute_command "\"$TMPDIR/$PEDIR/puppet-enterprise-installer\" -y -c \"$PT_pe_conf\""
 
 }
 
@@ -75,7 +76,7 @@ function run_puppet {
     sleep 1
   done
 
-  for run in $(seq 1 $retries); do
+  for i in $(seq 1 $retries); do
     exec 3>&1
     output=$(/opt/puppetlabs/bin/puppet agent -t --detailed-exitcodes | tee /dev/fd/3; exit "${PIPESTATUS[0]}")
     exit_code=$?

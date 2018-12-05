@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-DESTINATION_DIR=$(dirname $PT_filename)
+# shellcheck disable=SC2154
+
+DESTINATION_DIR=$(dirname "$PT_filename")
 
 function raise_error {
   cat << ERROR_MESSAGE
   { "_error": {
-    "msg": "Task exited 1:\n $1",
+    "msg": "Task exited 1:\\n $1",
     "kind": "deploy_pe/write_to_file-error",
     "details": { "exitcode": 1 }
     }
@@ -29,7 +31,7 @@ function write_file {
 }
 
 if [ ! -d "$DESTINATION_DIR" ]; then
-  mkdir -p $DESTINATION_DIR
+  mkdir -p "$DESTINATION_DIR"
 fi
 
 if [ -d "$DESTINATION_DIR" ]; then
