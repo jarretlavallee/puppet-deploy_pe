@@ -3,6 +3,7 @@ plan deploy_pe::provision_master (
   String $version = '2018.1.5',
   String $base_url = 'http://pe-releases.puppetlabs.lan',
   String $tmp_path = '/tmp',
+  Optional[Hash] $pe_settings = { password => 'puppetlabs'}, # See the settings in pe.conf.epp
   Optional[String] $download_url = undef,
   TargetSpec $nodes,
 ) {
@@ -21,11 +22,16 @@ plan deploy_pe::provision_master (
         default => $download_url,
       }
       $tarball_path = "${tmp_path}/${package_name}"
-      upload_file(
-        'deploy_pe/pe.conf',
-        "${tmp_path}/pe.conf",
+      $pe_conf_content = epp(
+        'deploy_pe/pe.conf.epp',
+        $pe_settings,
+      )
+      run_task(
+        'deploy_pe::write_to_file',
         $target,
         'Uploading the pe.conf',
+        filename => "${tmp_path}/pe.conf",
+        contents => $pe_conf_content,
       )
       run_task(
         'deploy_pe::download_file',

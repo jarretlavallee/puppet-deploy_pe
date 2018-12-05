@@ -1,0 +1,64 @@
+  <%- | 
+      String $password = 'puppetlabs',
+      String $puppet_master_host = '%{::trusted.certname}',
+      Array[String] $dns_alt_names = ["puppet"],
+      Boolean $check_for_updates = false,
+      Boolean $send_analytics_data = false,
+      Boolean $configure_tuning = true,
+      Optional[String] $console_host = undef,
+      Optional[String] $puppetdb_host = undef,
+      Optional[Array[String]] $extra_settings = undef,
+| -%>
+{
+  "console_admin_password": "<%= $password %>"
+  "puppet_enterprise::puppet_master_host": "<%= $puppet_master_host %>"
+  <%- if $console_host != undef { -%>
+  "puppet_enterprise::console_host": "<%= $console_host %>"
+  <%- } -%>
+  <%- if $puppetdb_host != undef { -%>
+  "puppet_enterprise::puppetdb_host": "<%= $puppetdb_host %>"
+  <%- } -%>
+  "pe_install::puppet_master_dnsaltnames": <%= $dns_alt_names.map |$alt_name| { "\"${alt_name}\""} %>
+  "puppet_enterprise::profile::master::check_for_updates": <%= $check_for_updates %>
+  "puppet_enterprise::send_analytics_data": <%= $send_analytics_data %>
+  <%- if $configure_tuning == true { -%>
+  # Lab Performance tuning for 4GB of memory
+  "puppet_enterprise::profile::amq::broker::heap_mb": "96"
+  "puppet_enterprise::master::puppetserver::jruby_max_active_instances": 1
+  "puppet_enterprise::master::puppetserver:reserved_code_cache": "96m"
+  "puppet_enterprise::profile::master::java_args": {
+    "Xmx": "384m",
+    "Xms": "128m",
+    "XX:MaxPermSize": "=96m",
+    "XX:PermSize": "=64m",
+    "XX:+UseG1GC": ""
+  }
+  "puppet_enterprise::profile::puppetdb::java_args": {
+    "Xmx": "128m",
+    "Xms": "64m",
+    "XX:MaxPermSize": "=96m",
+    "XX:PermSize": "=64m",
+    "XX:+UseG1GC": ""
+  }
+  "puppet_enterprise::profile::console::java_args": {
+    "Xmx": "64m",
+    "Xms": "64m",
+    "XX:MaxPermSize": "=96m",
+    "XX:PermSize": "=64m",
+    "XX:+UseG1GC": ""
+  }
+  "puppet_enterprise::profile::console::delayed_job_workers": 1
+  "puppet_enterprise::profile::database::shared_buffers": "4MB"
+  "puppet_enterprise::profile::orchestrator::java_args": {
+    "Xmx": "64m",
+    "Xms": "64m",
+    "XX:+UseG1GC": ""
+  }
+<%- } -%>
+<%- if $extra_settings =~ Array[Data,1] { -%>
+# Custom Settings
+  <%- $extra_settings.each |$setting| { -%>
+<%= $setting %>
+  <%- } -%>
+<%- } -%>
+}
