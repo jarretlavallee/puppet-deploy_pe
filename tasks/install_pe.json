@@ -1,0 +1,19 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Install PE on a server",
+  "parameters": {
+    "tarball": {
+      "description": "The path to the PE tarball",
+      "type": "String[1]"
+    },
+    "pe_conf": {
+      "description": "The path to the pe.conf",
+      "type": "String[1]"
+    },
+    "tmpdir": {
+      "description": "The directory to extract the tarball. Defaults to the directory containing the tarball",
+      "type": "Optional[String[1]]"
+    }
+  }
+}

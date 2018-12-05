@@ -1,0 +1,15 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Download a file to a specified folder",
+  "parameters": {
+    "url": {
+      "description": "The HTTP/HTTPS URL for the specified file",
+      "type": "String[1]"
+    },
+    "destination": {
+      "description": "The absolute path to download the file as",
+      "type": "String[1]"
+    }
+  }
+}

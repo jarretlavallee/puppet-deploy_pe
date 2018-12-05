@@ -20,24 +20,25 @@ plan deploy_pe::provision_master (
         undef => "${base_url}/${$version}/${package_name}",
         default => $download_url,
       }
+      $tarball_path = "${tmp_path}/${package_name}"
       upload_file(
         'deploy_pe/pe.conf',
         "${tmp_path}/pe.conf",
         $target,
-        'Uploading the pe.conf'
+        'Uploading the pe.conf',
       )
       run_task(
-        'ref_arch_setup::download_pe_tarball',
+        'deploy_pe::download_file',
         $target,
         'Downloading the PE tarball',
         url => $url,
-        destination => $tmp_path
+        destination => $tarball_path,
       )
       run_task(
         'ref_arch_setup::install_pe',
         $target,
         'Installing PE, this may take a while',
-        pe_tarball_path => "${tmp_path}/${package_name}",
+        pe_tarball_path => $tarball_path,
         pe_conf_path => "${tmp_path}/pe.conf"
       )
     }
