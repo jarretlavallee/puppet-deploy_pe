@@ -16,7 +16,7 @@ function deploy_pe::platform_tag (
         default => 'amd64',
         }
       $version = $osname ? {
-        'ubuntu' => $node_facts['os']['release']['full'],
+        'ubuntu' => regsubst($node_facts['os']['release']['full'], '\.', ''),
         default => $node_facts['os']['release']['major']
       }
     }
