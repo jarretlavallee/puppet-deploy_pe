@@ -74,3 +74,15 @@ EOM
   end
 end
 
+desc 'Syntax check shellscripts'
+task :shellcheck do
+  Dir['{tasks,files}/**/*.sh'].each do |shell_file|
+    sh "shellcheck #{shell_file}" do |ok, res|
+        exit res.exitstatus unless ok
+    end
+  end
+end
+
+PuppetSyntax.exclude_paths ||= []
+PuppetSyntax.exclude_paths << 'plans/**/*'
+

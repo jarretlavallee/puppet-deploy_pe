@@ -3,3 +3,33 @@ appveyor.yml:
   delete: true
 .gitlab-ci.yml:
   delete: true
+Rakefile:
+  extras:
+    - |
+       desc 'Syntax check shellscripts'
+       task :shellcheck do
+         Dir['{tasks,files}/**/*.sh'].each do |shell_file|
+           sh "shellcheck #{shell_file}" do |ok, res|
+               exit res.exitstatus unless ok
+           end
+         end
+       end
+    - |
+      PuppetSyntax.exclude_paths ||= []
+      PuppetSyntax.exclude_paths << 'plans/**/*'
+
+.travis.yml:
+  branches:
+    - /.*/
+  deploy: false
+  global_env:
+      - SHELLCHECK_OPTS="-e SC1117"
+  includes:
+    - env: CHECK="syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop shellcheck"
+  remove_includes:
+    - env: CHECK="syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop"
+    - env: CHECK=parallel_spec
+    - env: PUPPET_GEM_VERSION="~> 5.0" CHECK=parallel_spec
+      rvm: 2.4.4
+    - env: PUPPET_GEM_VERSION="~> 4.0" CHECK=parallel_spec
+      rvm: 2.1.9
