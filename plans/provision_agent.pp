@@ -31,7 +31,8 @@ plan deploy_pe::provision_agent (
           'windows' => 'bootstrap::windows',
           default => 'bootstrap::linux'
         }
-	# The pe_repo class for Ubuntu does not have the decimals in the version
+
+        # The pe_repo class for Ubuntu does not have the decimals in the version
         $platform = regsubst(deploy_pe::platform_tag($target_facts, true), '\.', '')
         run_command(
           "/opt/puppetlabs/puppet/bin/puppet apply -e \"include pe_repo::platform::${platform}\"",

@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# TODO: helper task?
+# shellcheck disable=SC1090,SC2027,SC2034
 
 # Exit with an error message and error code, defaulting to 1
 fail() {
   # Print a stderr: entry if there were anything printed to stderr
   if [[ -s $_tmp ]]; then
     # Hack to try and output valid json by replacing newlines with spaces.
-    echo "{ \"status\": \"error\", \"message\": \"$1\", \"stderr\": \"$(tr '\n' ' ' <$_tmp)\" }"
+    echo "{ \"status\": \"error\", \"message\": \"$1\", \"stderr\": \"$(tr '\n' ' ' <"$_tmp")\" }"
   else
     echo "{ \"status\": \"error\", \"message\": \"$1\" }"
   fi
 
-  exit ${2:-1}
+  exit "${2:-1}"
 }
 
 validation_error() {
