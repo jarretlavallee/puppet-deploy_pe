@@ -15,5 +15,6 @@
       "description": "The directory to extract the tarball. Defaults to the directory containing the tarball",
       "type": "Optional[String[1]]"
     }
-  }
+  },
+  "files": ["deploy_pe/files/common.sh"], "input_method": "environment"
 }

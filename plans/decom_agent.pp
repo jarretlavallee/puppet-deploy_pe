@@ -3,11 +3,12 @@ plan deploy_pe::decom_agent (
   TargetSpec $master,
   TargetSpec $nodes,
 ) {
-    get_targets($nodes).each |$target| {
+    # Build up an array of either the certname or guessed hostname of the targets
+    $agents = get_targets($nodes).map |$target| {
       $target_certname = run_task(
           'puppet_conf',
           $target,
-          'Attempting the certname for the agent',
+          'Finding the certname for the agent',
           action => 'get',
           setting => 'certname',
           '_catch_errors' => true
@@ -18,12 +19,11 @@ plan deploy_pe::decom_agent (
           default => $target_certname,
       }
         unless $node_certname == undef {
-          run_command(
-            "/opt/puppetlabs/puppet/bin/puppet node purge ${node_certname}",
-            $master,
-            "Attempting to purge ${node_certname} from the master",
-            '_catch_errors' => true
-            )
+          $node_certname
         }
+    }
+
+    unless empty($agents) {
+      run_task('purge_node', $master, agent_certnames => $agents.join(','))
     }
 }

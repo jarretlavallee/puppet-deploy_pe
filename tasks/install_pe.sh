@@ -1,105 +1,40 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # shellcheck disable=SC2154
 # shellcheck disable=SC2034
 
-TMPDIR=${PT_tmpdir:-$(dirname "$PT_tarball")}
-PEDIR=$(dirname "$(tar -tf "$PT_tarball" | head -n 1)")
+declare PT__installdir
+source "$PT__installdir/deploy_pe/files/common.sh"
+PUPPET_BIN=/opt/puppetlabs/bin
 
+(( $EUID == 0 )) || fail "This utility must be run as root"
 
-function raise_error {
-  cat << ERROR_MESSAGE
-  { "_error": {
-    "msg": "Task exited 1:\\n $1",
-    "kind": "deploy_pe/install_pe-error",
-    "details": { "exitcode": 1 }
-    }
+# Hackish, but cd to the directory we get via the PT_tarball parameter
+# Extract it, cd to the directory with the .tar.gz suffix, and run the installer
+cd "${tarball%/*}"
+tar xf "$tarball" || fail "Error extracting PE tarball"
+cd "${tarball%.tar.gz*}"
+chmod +x ./puppet-enterprise-installer
+
+./puppet-enterprise-installer -y -c "$pe_conf" || fail "Error installing PE"
+
+lockfile="$("${PUPPET_BIN}/puppet" config print agent_catalog_run_lockfile)"
+retries=5
+wait_time=300
+
+# Sleep in increments of 1 until either the lockfile is gone or we reach $wait_time
+while [[ -e $lockfile ]] && (( wait_time > 0 )); do
+  (( wait_time-- ))
+  sleep 1
+done
+
+# Fail if the lock still exists
+[[ -e $lockfile ]] && fail "Agent lockfile $lockfile still exists after waiting $wait_time seconds"
+
+# Run Puppet until there are no changes, otherwise fail
+for ((i = 0; i < retries; i++)); do
+  "${PUPPET_BIN}/puppet" agent -t --detailed-exitcodes >/dev/null && {
+    success '{ "status": "Successfully installed" }'
   }
-ERROR_MESSAGE
-  exit 1
-}
+done
 
-function output {
-  cat << OUTPUT_MESSAGE
-  { 
-    "msg": "$1"
-  }
-OUTPUT_MESSAGE
-  exit 0
-}
-
-function validate_input {
-  if [ ! -e "$PT_tarball" ]; then
-    raise_error "Tarball, '$PT_tarball', is missing; exiting"
-  fi
-
-  if [ ! -e "$PT_pe_conf" ]; then
-    raise_error "pe.conf, '$PT_pe_conf', is missing; exiting"
-  fi
-
-  if [ ! -d "$TMPDIR" ]; then
-    mkdir -p "$TMPDIR"
-    if [ ! -d "$TMPDIR" ]; then
-      raise_error "Tmpdir, '$TMPDIR', does not exist and could not be created; exiting"
-    fi
-  fi
-
-}
-
-function execute_command {
-    exit_code=${2:-"0"}
-    eval "$1"
-    if [ "$?" -ne "$exit_code" ]
-    then
-        raise_error "Command '$1' failed; exiting"
-    fi
-}
-
-function extract_tarball {
-  # TODO: Ensure tar is installed on the system
-  execute_command "tar -xvf \"$PT_tarball\" -C \"$TMPDIR\""
-}
-
-function run_pe_installer {
-
-  execute_command "chmod +x \"$TMPDIR/$PEDIR/puppet-enterprise-installer\""
-  execute_command "\"$TMPDIR/$PEDIR/puppet-enterprise-installer\" -y -c \"$PT_pe_conf\""
-
-}
-
-function run_puppet {
-  lockfile=$(/opt/puppetlabs/bin/puppet config print agent_catalog_run_lockfile)
-  retries=5
-  wait_time=300
-  exit_code=0
-  while [[ -f "$lockfile" && wait_time -gt 0 ]]
-  do
-    sleep 1
-  done
-
-  for i in $(seq 1 $retries); do
-    exec 3>&1
-    output=$(/opt/puppetlabs/bin/puppet agent -t --detailed-exitcodes | tee /dev/fd/3; exit "${PIPESTATUS[0]}")
-    exit_code=$?
-
-    case $exit_code in
-    0)
-      return 0
-    ;;
-    *)
-    continue
-    ;;
-    esac
-  done
-
-  return $exit_code
-}
-
-# Main
-validate_input
-extract_tarball
-run_pe_installer
-if run_puppet; then
-  output "Sucessfully installed"
-else
-  raise_error "Failed to run puppet"
-fi
+fail "Failed to run Puppet in $retries attempts"
