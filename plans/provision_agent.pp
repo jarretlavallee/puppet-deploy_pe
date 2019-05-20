@@ -11,6 +11,7 @@ plan deploy_pe::provision_agent (
     # TODO: Check that we are running as root/Administrator.
     # TODO: Handle errors
 
+    $master.apply_prep
     notice('Updating facts for nodes')
     without_default_logging() || { run_plan(facts, nodes => $nodes) }
     get_targets($nodes).each |$target| {
@@ -30,7 +31,9 @@ plan deploy_pe::provision_agent (
           'windows' => 'bootstrap::windows',
           default => 'bootstrap::linux'
         }
-        $platform = deploy_pe::platform_tag($target_facts, true)
+
+        # The pe_repo class for Ubuntu does not have the decimals in the version
+        $platform = regsubst(deploy_pe::platform_tag($target_facts, true), '\.', '')
         run_command(
           "/opt/puppetlabs/puppet/bin/puppet apply -e \"include pe_repo::platform::${platform}\"",
           $master,
@@ -54,10 +57,8 @@ plan deploy_pe::provision_agent (
         ).find($target.name).value['status']
         without_default_logging() || { run_plan(facts, nodes => $target) }
         run_task(
-          'cert_sign',
+          'sign_cert::sign_cert',
           $master,
-          "Signing certificate for ${target_certname} on ${master_fqdn}",
-          allow_dns_alt_names => 'yes',
           agent_certnames => $target_certname
         )
       } else {

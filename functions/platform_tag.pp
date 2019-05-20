@@ -3,9 +3,13 @@ function deploy_pe::platform_tag (
   Boolean $underscores = false,
 ) >> String {
   $arch_default = 'x86_64'
-  case $node_facts['os']['family'].downcase {
+  $family = $node_facts['os']['family'].downcase
+  $name = $node_facts['os']['name'].downcase
+
+  case $family {
     'redhat': {
-      $osname = 'el'
+      # the pe_repo class is different for fedora
+      $osname = $name ? { 'fedora' => 'fedora', default => 'el' }
       $version = $node_facts['os']['release']['major']
       $arch = $node_facts['architecture'] ? { undef => $arch_default, default => $node_facts['architecture'] }
     }
@@ -16,7 +20,7 @@ function deploy_pe::platform_tag (
         default => 'amd64',
         }
       $version = $osname ? {
-        'ubuntu' => regsubst($node_facts['os']['release']['full'], '\.', ''),
+        'ubuntu' => $node_facts['os']['release']['full'],
         default => $node_facts['os']['release']['major']
       }
     }
@@ -24,6 +28,12 @@ function deploy_pe::platform_tag (
       $osname = 'sles'
       $version = $node_facts['os']['release']['major']
       $arch = $node_facts['architecture'] ? { undef => $arch_default, default => $node_facts['architecture'] }
+    }
+    # Why are you tring to install Solaris, anyway
+    /(oracle solaris|solaris)/: {
+      $osname = $node_facts['os']['name'].downcase
+      $version = $node_facts['os']['release']['major']
+      $arch = 'i386'
     }
     windows: {
       $osname = 'windows'

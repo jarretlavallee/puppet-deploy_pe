@@ -1,54 +1,17 @@
-#!/usr/bin/env bash
-# shellcheck disable=SC2154
+#!/bin/bash
+# shellcheck disable=SC2154,SC1090,SC2128
 
-URL=$PT_url
-DESTINATION=$PT_destination
-DESTINATION_DIR=$(dirname "$DESTINATION")
+declare PT__installdir
+source "$PT__installdir/deploy_pe/files/common.sh"
 
-function raise_error {
-  cat << ERROR_MESSAGE
-  { "_error": {
-    "msg": "Task exited 1:\\n $1",
-    "kind": "deploy_pe/download-error",
-    "details": { "exitcode": 1 }
-    }
-  }
-ERROR_MESSAGE
-  exit 1
-}
+(( EUID == 0 )) || fail "This utility must be run as root"
 
-function output {
-  cat << OUTPUT_MESSAGE
-  { 
-    "file": "$1",
-    "msg": "$2"
-  }
-OUTPUT_MESSAGE
-  exit 0
-}
+_tmp_dir="$(mktemp -d)"
+cd "$_tmp_dir" || fail
 
-function download_file {
-  url_size=$(curl -s -L -f --head "$URL" | sed -n 's/Content-Length: \([0-9]\+\)/\1/p' | tr -d '\012\015')
-  local_file_size=$(stat -c%s "$DESTINATION" 2>/dev/null)
-  if [[ ! -z "$url_size" && ! -z "$local_file_size" && "$url_size" -eq "$local_file_size" ]]; then
-    return 0
-  else
-    curl -f -L -k -o "$DESTINATION" "$URL"
-    return $?
-  fi
-}
+# Use the filename in the url as the output file
+curl -sfO "$url" || fail "Error downloading PE tarball: $url"
 
-if [ ! -d "$DESTINATION_DIR" ]; then
-  mkdir -p "$DESTINATION_DIR"
-fi
-
-if [ -d "$DESTINATION_DIR" ]; then
-  if download_file ; then
-    output "$DESTINATION" "file downloaded successfully"
-  else
-    raise_error "Download failed; exiting"
-  fi
-
-else
-  raise_error "Destination directory does not exist and could not be created; exiting"
-fi
+# We intentionally only want the first element of ${f}
+f=(*)
+success "{ \"output_file\": \"${PWD}/${f}\" }"

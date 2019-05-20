@@ -6,10 +6,7 @@
     "url": {
       "description": "The HTTP/HTTPS URL for the specified file",
       "type": "String[1]"
-    },
-    "destination": {
-      "description": "The absolute path to download the file as",
-      "type": "String[1]"
     }
-  }
+  },
+  "files": ["deploy_pe/files/common.sh"], "input_method": "environment"
 }
