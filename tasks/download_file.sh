@@ -14,4 +14,4 @@ curl -sfO "$url" || fail "Error downloading PE tarball: $url"
 
 # We intentionally only want the first element of ${f}
 f=(*)
-success "{ \"pe_tarball\": \"${PWD}/${f}\" }"
+success "{ \"output_file\": \"${PWD}/${f}\" }"

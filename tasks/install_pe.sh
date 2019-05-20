@@ -31,7 +31,7 @@ done
 
 # Run Puppet until there are no changes, otherwise fail
 for ((i = 0; i < retries; i++)); do
-  "${PUPPET_BIN}/puppet" agent -t --detailed-exitcodes >/dev/null && {
+  "${PUPPET_BIN}/puppet" agent -t >/dev/null && {
     success '{ "status": "Successfully installed" }'
   }
 done

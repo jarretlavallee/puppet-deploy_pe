@@ -44,7 +44,7 @@ plan deploy_pe::provision_master (
       'deploy_pe::install_pe',
       $target,
       'Installing PE, this may take a while',
-      tarball => $tarball.first.value['pe_tarball'],
+      tarball => $tarball.first.value['output_file'],
       pe_conf => $tmp_dest
     )
   }
