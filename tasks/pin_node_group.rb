@@ -21,7 +21,7 @@ http.cert = OpenSSL::X509::Certificate.new(File.read(Puppet.settings['hostcert']
 http.key = OpenSSL::PKey::RSA.new(File.read(Puppet.settings['hostprivkey']))
 http.ca_file = Puppet.settings['localcacert']
 
-# Get the id of the 'PE Master' node group
+# Get the id of the node group
 res = http.request_get(uri.request_uri).read_body
 node_group_id = JSON.parse(res).find { |group| group['name'] == node_group }['id']
 raise "No group ID could be found for #{node_group}" if node_group_id.nil?

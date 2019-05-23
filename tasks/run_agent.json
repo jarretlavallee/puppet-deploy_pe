@@ -2,5 +2,15 @@
   "puppet_task_version": 1,
   "supports_noop": false,
   "description": "Run the Puppet agent until there are no changes",
+  "parameters": {
+     "retries": {
+        "description": "The number of times to retry the agent run before failing. Defaults to 5",
+        "type": "Integer"
+     },
+     "wait_time": {
+        "description": "The time to wait for a running agent lock to finish. Defaults to 300",
+        "type": "Integer"
+     }
+  },
   "files": ["deploy_pe/files/common.sh"], "input_method": "environment"
 }
