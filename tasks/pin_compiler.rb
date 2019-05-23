@@ -6,6 +6,7 @@ require 'net/http'
 Puppet.initialize_settings
 
 # Turn comma separated agents into an array
+uri = URI.parse('https://localhost:4433/classifier-api/v1/groups')
 agents = JSON.parse(ARGF.read)['agent_certnames'].split(',')
 
 # Create a Net::HTTP object and set the auth to use our certificates
@@ -17,7 +18,6 @@ http.key = OpenSSL::PKey::RSA.new(File.read(Puppet.settings['hostprivkey']))
 http.ca_file = Puppet.settings['localcacert']
 
 # Get the id of the 'PE Master' node group
-uri = URI.parse('https://localhost:4433/classifier-api/v1/groups')
 res = http.request_get(uri.request_uri).read_body
 master_id = JSON.parse(res).find { |group| group['name'] == 'PE Master' }['id']
 
