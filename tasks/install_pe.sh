@@ -16,24 +16,4 @@ chmod +x ./puppet-enterprise-installer
 
 ./puppet-enterprise-installer -y -c "$pe_conf" || fail "Error installing PE"
 
-lockfile="$("${PUPPET_BIN}/puppet" config print agent_catalog_run_lockfile)"
-retries=5
-wait_time=300
-
-# Sleep in increments of 1 until either the lockfile is gone or we reach $wait_time
-while [[ -e $lockfile ]] && (( wait_time > 0 )); do
-  (( wait_time-- ))
-  sleep 1
-done
-
-# Fail if the lock still exists
-[[ -e $lockfile ]] && fail "Agent lockfile $lockfile still exists after waiting $wait_time seconds"
-
-# Run Puppet until there are no changes, otherwise fail
-for ((i = 0; i < retries; i++)); do
-  "${PUPPET_BIN}/puppet" agent -t >/dev/null && {
-    success '{ "status": "Successfully installed" }'
-  }
-done
-
-fail "Failed to run Puppet in $retries attempts"
+success "PE installed"

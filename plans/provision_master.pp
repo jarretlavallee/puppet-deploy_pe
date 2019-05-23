@@ -47,5 +47,7 @@ plan deploy_pe::provision_master (
       tarball => $tarball.first.value['output_file'],
       pe_conf => $tmp_dest
     )
+
+    run_task('deploy_pe::run_agent', $target)
   }
 }

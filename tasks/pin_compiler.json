@@ -1,0 +1,12 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Provision Compiler(s)",
+  "parameters": {
+    "agent_certnames": {
+      "description": "A comma-separated list of agent certificate names",
+      "type": "Pattern[/^([A-Za-z0-9._-]+,?)+$/]"
+    }
+  },
+  "files": ["ruby_task_helper/files/task_helper.rb"], "input_method": "stdin"
+}
