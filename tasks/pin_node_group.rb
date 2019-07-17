@@ -26,7 +26,7 @@ res = http.request_get(uri.request_uri).read_body
 node_group_id = JSON.parse(res).find { |group| group['name'] == node_group }['id']
 raise "No group ID could be found for #{node_group}" if node_group_id.nil?
 
-# use the /pin endpoint to pin our compile masters to PE Master
+# use the /pin endpoint to pin our node to the specified group
 uri = URI.parse('https://localhost:4433/classifier-api/v1/groups/%s/pin' % node_group_id)
 req = Net::HTTP::Post.new(uri)
 req.content_type = 'application/json'

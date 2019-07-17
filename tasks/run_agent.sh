@@ -4,8 +4,8 @@
 declare PT__installdir
 source "$PT__installdir/deploy_pe/files/common.sh"
 PUPPET_BIN=/opt/puppetlabs/bin
-retries=${PT_retries:-5}
-wait_time=${PT_wait_time:-300}
+retries=${retries:-5}
+wait_time=${wait_time:-300}
 
 (( EUID == 0 )) || fail "This utility must be run as root"
 
