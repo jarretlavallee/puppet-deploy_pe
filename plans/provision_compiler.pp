@@ -16,7 +16,7 @@ plan deploy_pe::provision_compiler (
         setting => 'certname'
       ).find($target.name).value['status']
 
-      run_task('deploy_pe::pin_compiler', $master, agent_certnames => $target_certname)
+      run_task('deploy_pe::pin_node_group', $master, node_group => 'PE Master', agent_certnames => $target_certname)
       run_task('deploy_pe::run_agent', $target)
       run_task('deploy_pe::run_agent', $master)
     }

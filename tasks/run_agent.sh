@@ -4,12 +4,12 @@
 declare PT__installdir
 source "$PT__installdir/deploy_pe/files/common.sh"
 PUPPET_BIN=/opt/puppetlabs/bin
+retries=${retries:-5}
+wait_time=${wait_time:-300}
 
 (( EUID == 0 )) || fail "This utility must be run as root"
 
 lockfile="$("${PUPPET_BIN}/puppet" config print agent_catalog_run_lockfile)"
-retries=5
-wait_time=300
 
 # Sleep in increments of 1 until either the lockfile is gone or we reach $wait_time
 while [[ -e $lockfile ]] && (( wait_time > 0 )); do
