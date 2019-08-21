@@ -10,7 +10,7 @@ _tmp_dir="$(mktemp -d)"
 cd "$_tmp_dir" || fail
 
 # Use the filename in the url as the output file
-curl -sfO "$url" || fail "Error downloading PE tarball: $url"
+curl -sLfO "$url" || fail "Error downloading PE tarball: $url"
 
 # We intentionally only want the first element of ${f}
 f=(*)
