@@ -5,11 +5,11 @@
   "parameters": {
      "retries": {
         "description": "The number of times to retry the agent run before failing. Defaults to 5",
-        "type": "Integer"
+        "type": "Optional[Integer[1]]"
      },
      "wait_time": {
         "description": "The time to wait for a running agent lock to finish. Defaults to 300",
-        "type": "Integer"
+        "type": "Optional[Integer[1]]"
      }
   },
   "files": ["deploy_pe/files/common.sh"], "input_method": "environment"

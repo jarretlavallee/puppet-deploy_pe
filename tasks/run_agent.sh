@@ -23,8 +23,8 @@ done
 # Run Puppet until there are no changes, otherwise fail
 for ((i = 0; i < retries; i++)); do
   "${PUPPET_BIN}/puppet" agent -t >/dev/null && {
-    success '{ "status": "Successfully installed" }'
+    success '{ "status": "Successfully ran Puppet agent" }'
   }
 done
 
-fail "Failed to run Puppet in $retries attempts"
+fail "Failed to run Puppet agent in $retries attempts"
