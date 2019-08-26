@@ -1,24 +1,25 @@
 # An example plan to install PE on one or more nodes
 plan deploy_pe::provision_master (
-  String $version = '2018.1.5',
-  String $base_url = 'http://pe-releases.puppetlabs.lan',
   TargetSpec $nodes,
+  Optional[String] $version = undef, # Version of PE to download
+  Optional[String] $base_url = 'https://pm.puppetlabs.com/puppet-enterprise', # The base URL to download PE from
+  Optional[String] $download_url = undef, # A specific URL to download the tarball
+  Optional[String] $installer_tarball = undef, # The local tarball on the machine to use instead of downloading PE
   Optional[Hash] $pe_settings = {password => 'puppetlabs'}, # See the settings in pe.conf.epp
-  Optional[String] $download_url = undef,
 ) {
 
   # TODO: Format output
   # TODO: Error handling
+  if $installer_tarball == undef and $version == undef and $download_url == undef {
+    fail('You must provide version and base_url, download_url, or installer_tarball')
+  } elsif $installer_tarball != undef and ($version != undef or $download_url) {
+    fail('You can either version and base_url to download a new tarball or installer_tarball to use one on the target system')
+  }
 
   notice('Updating facts for nodes')
   without_default_logging() || { run_plan(facts, nodes => $nodes) }
   get_targets($nodes).each |$target| {
     $master_facts = get_targets($target)[0].facts()
-    $package_name = deploy_pe::master_package_name($master_facts, $version)
-    $url = $download_url ? {
-      undef => "${base_url}/${$version}/${package_name}",
-      default => $download_url,
-    }
 
     $pe_conf_content = epp(
       'deploy_pe/pe.conf.epp',
@@ -33,18 +34,30 @@ plan deploy_pe::provision_master (
     file::write($tmp_file, $pe_conf_content)
     upload_file($tmp_file, $tmp_dest, $target)
 
-    $tarball = run_task(
-      'deploy_pe::download_file',
-      $target,
-      'Downloading the PE tarball',
-      url => $url
-    )
+    if $version != undef or $download_url != undef {
+      # Download the tarball
+      $package_name = deploy_pe::master_package_name($master_facts, $version)
+      $url = $download_url ? {
+        undef => "${base_url}/${$version}/${package_name}",
+        default => $download_url,
+      }
+      $tarball = run_task(
+        'deploy_pe::download_file',
+        $target,
+        'Downloading the PE tarball',
+        url => $url
+      )
+      $tarball_dest = $tarball.first.value['output_file']
+    } else {
+      # Use the provided tarball
+      $tarball_dest = $installer_tarball
+    }
 
     run_task(
       'deploy_pe::install_pe',
       $target,
       'Installing PE, this may take a while',
-      tarball => $tarball.first.value['output_file'],
+      tarball => $tarball_dest,
       pe_conf => $tmp_dest
     )
 
