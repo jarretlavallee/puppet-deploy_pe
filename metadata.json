@@ -2,9 +2,11 @@
   "name": "jarretlavallee-deploy_pe",
   "version": "0.1.0",
   "author": "jarretlavallee",
-  "summary": "",
+  "summary": "Install PE lab instances with bolt plans",
   "license": "Apache-2.0",
-  "source": "",
+  "source": "https://github.com/jarretlavallee/puppet-deploy_pe",
+  "project_page": "https://github.com/jarretlavallee/puppet-deploy_pe",
+  "issues_url": "https://github.com/jarretlavallee/puppet-deploy_pe/issues",
   "dependencies": [
 
   ],
