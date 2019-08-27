@@ -1,88 +1,84 @@
 
 # deploy_pe
 
-Welcome to your new module. A short overview of the generated parts can be found in the PDK documentation at https://puppet.com/pdk/latest/pdk_generating_modules.html .
-
-The README template below provides a starting point with details about what information to include in your README.
+A module of Bolt plans and tasks to facilitate a lab based installation of a monolithic PE stack.
 
 #### Table of Contents
 
 1. [Description](#description)
 2. [Setup - The basics of getting started with deploy_pe](#setup)
-    * [What deploy_pe affects](#what-deploy_pe-affects)
     * [Setup requirements](#setup-requirements)
     * [Beginning with deploy_pe](#beginning-with-deploy_pe)
-3. [Usage - Configuration options and additional functionality](#usage)
-4. [Limitations - OS compatibility, etc.](#limitations)
-5. [Development - Guide for contributing to the module](#development)
+3. [Usage - Examples](#usage)
+4. [Limitations](#limitations)
+5. [Development](#development)
 
 ## Description
 
-Briefly tell users why they might want to use your module. Explain what your module does and what kind of problems users can solve with it.
+A module of Bolt plans and tasks to facilitate the installation of a monolithic PE stack. This module is designed to be used with the [Puppet Debugging Kit](https://github.com/puppetlabs/puppet-debugging-kit) to install a lab based PE stack.
 
-This should be a fairly short description helps the user decide if your module is what they want.
+Currently the module provides the following plans.
+
+* Install a PE master
+* Install an agent and sign the certificate on the master
+* Install and configure a compiler
 
 ## Setup
 
-### What deploy_pe affects **OPTIONAL**
+### Setup Requirements
 
-If it's obvious what your module touches, you can skip this section. For example, folks can probably figure out that your mysql_instance module affects their MySQL instances.
+This module has only been tested on Linux and MacOS operating systems. The plans and tasks will likely not work from windows workstations. Please use the current version of Bolt to run these tasks and plans
 
-If there's more that they should know about, though, this is the place to mention:
-
-* Files, packages, services, or operations that the module will alter, impact, or execute.
-* Dependencies that your module automatically installs.
-* Warnings or other important notices.
-
-### Setup Requirements **OPTIONAL**
-
-If your module requires anything extra before setting up (pluginsync enabled, another module, etc.), mention it here.
-
-If your most recent release breaks compatibility or requires particular steps for upgrading, you might want to include an additional "Upgrading" section here.
+The plans assume that there are no puppet components installed on the target machines. Only 2018.1+ versions of PE have been tested.
 
 ### Beginning with deploy_pe
 
-The very basic steps needed for a user to get the module up and running. This can include setup steps, if necessary, or it can be an example of the most basic use of the module.
-
 ## Usage
 
-Include usage examples for common use cases in the **Usage** section. Show your users how to use your module to solve problems, and be sure to include code examples. Include three to five examples of the most important or common tasks a user can accomplish with your module. Show users how to accomplish more complex tasks that involve different types, classes, and functions working in tandem.
+To use this module, install it in the `boltdir` and leverage the plans in the section below. The examples below will install a PE master, compiler, and agent.
 
-## Reference
+Install a 2019.1.1 PE master with the `admin` password set to `puppetlabs`.
 
-This section is deprecated. Instead, add reference information to your code as Puppet Strings comments, and then use Strings to generate a REFERENCE.md in your module. For details on how to add code comments and generate documentation with Strings, see the Puppet Strings [documentation](https://puppet.com/docs/puppet/latest/puppet_strings.html) and [style guide](https://puppet.com/docs/puppet/latest/puppet_strings_style.html)
-
-If you aren't ready to use Strings yet, manually create a REFERENCE.md in the root of your module directory and list out each of your module's classes, defined types, facts, functions, Puppet tasks, task plans, and resource types and providers, along with the parameters for each.
-
-For each element (class, defined type, function, and so on), list:
-
-  * The data type, if applicable.
-  * A description of what the element does.
-  * Valid values, if the data type doesn't make it obvious.
-  * Default value, if any.
-
-For example:
-
+```bash
+bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --nodes 'pe-master'
 ```
-### `pet::cat`
 
-#### Parameters
+The plan above will download the `2019.1.1` PE installer package, create a `pe.conf` with the password setting, and run the installer script to install PE.
 
-##### `meow`
+Install an agent from the PE master.
 
-Enables vocalization in your cat. Valid options: 'string'.
-
-Default: 'medium-loud'.
+```bash
+bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
 ```
+
+The plan above will install the agent using the installer script from the master after ensuring that the agent packages are available on the master. It will then sign the agent's certificate on the master.
+
+Install a compiler
+
+```bash
+bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-compiler'
+```
+
+The plan above will install the agent using the installer script from the master, pin the node to the `PE Master` node group, and then run the agent until there are no changes.
+
+Purge a node from the master
+
+```bash
+bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
+```
+
+The plan above will purge the node from the master. If the node is already offline it will try to guess the node name.
+
+See the [REFERENCE.md](REFERENCE.md) for additional parameters.
 
 ## Limitations
 
-In the Limitations section, list any incompatibilities, known issues, or other warnings.
+This is only meant for lab based installations and not production installations. It is meant to be run with [vagrant-bolt](https://github.com/oscar-stack/vagrant-bolt) and using the [Puppet Debugging Kit](https://github.com/puppetlabs/puppet-debugging-kit)
 
 ## Development
 
-In the Development section, tell other users the ground rules for contributing to your project and how they should submit their work.
+PRs and issues are welcome.
 
-## Release Notes/Contributors/Etc. **Optional**
+## Contributors
 
-If you aren't using changelog, put your release notes here (though you should consider using changelog). You can also add any additional sections you feel are necessary or important to include here. Please use the `## ` header.
+Thank you @m0dular for the continued help on this module.
