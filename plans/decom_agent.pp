@@ -1,4 +1,11 @@
-# An example plan to clean an agent certificate
+# @summary A plan to purge an agent on the master
+#
+# @param master
+#  The TargetSpec for the Master to use to run the node purge on
+# @param nodes
+#  The TargetSpec of one or more nodes to be removed from the environment
+# @example Decommission a node
+#  bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
 plan deploy_pe::decom_agent (
   TargetSpec $master,
   TargetSpec $nodes,

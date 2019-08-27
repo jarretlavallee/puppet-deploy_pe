@@ -1,4 +1,11 @@
-# An example plan to provision an agent and sign the certificate
+# @summary A plan to install an agent from the master
+#
+# @param master
+#  The TargetSpec for the Master from which to use the installer script
+# @param nodes
+#  The TargetSpec of one or more nodes to be installed
+# @example Install the PE agent on a node
+#  bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
 plan deploy_pe::provision_agent (
   TargetSpec $master,
   TargetSpec $nodes,

@@ -1,3 +1,11 @@
+# @summary A plan to install an compiler from the master
+#
+# @param master
+#  The TargetSpec for the Master from which to use the installer script
+# @param nodes
+#  The TargetSpec of one or more compilers to be installed
+# @example Install the PE agent on a node and configure it as a compiler
+#  bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-compiler'
 plan deploy_pe::provision_compiler (
   TargetSpec $master,
   TargetSpec $nodes,

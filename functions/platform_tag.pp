@@ -1,3 +1,10 @@
+# Generate the PE naming for the OS version
+#
+# @param node_facts
+#  A hash of facts that will be used to get the OS version
+# @param underscores
+#  A boolean to enable to use of underscores instead of dashes for the seperator
+# @return [String] The name of the OS version in `el-7-x86_64` format
 function deploy_pe::platform_tag (
   Hash $node_facts,
   Boolean $underscores = false,

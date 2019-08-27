@@ -1,4 +1,25 @@
-# An example plan to install PE on one or more nodes
+# @summary A plan to install a new PE master
+#
+# @param nodes
+#  The TargetSpec of one or more masters to be installed
+# @param version
+#  The PE version to download from the $base_url.
+#  The `$version`, `$download_url`, or `$installer_tarball` are mutually exclusive. Please choose only one option.
+# @param base_url
+#  The base of a HTTP URL that will be used to download the PE installer script.
+#  The resuting format is `${base_url}/${$version}/${package_name}`.
+# @param download_url
+#  A direct HTTP link to the installer tarball.
+#  The `$version`, `$download_url`, or `$installer_tarball` are mutually exclusive. Please choose only one option.
+# @param installer_tarball
+#  A path to the installer tarball on the target master. This option assumes that the tarball has already been downloaded on the target machine.
+#  The `$version`, `$download_url`, or `$installer_tarball` are mutually exclusive. Please choose only one option.
+# @param pe_settings
+#  A hash of the settings to be used in the `pe.conf` during the installation.
+#  The most common setting will be the `password`
+#  All other settings can be found in the `templates/pe.conf.epp`
+# @example Install a 2019.1.1 PE master on a node using `puppetlabs` as the password
+#  bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --nodes 'pe-master'
 plan deploy_pe::provision_master (
   TargetSpec $nodes,
   Optional[String] $version = undef, # Version of PE to download
