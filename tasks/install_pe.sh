@@ -11,7 +11,7 @@ PUPPET_BIN=/opt/puppetlabs/bin
 # Extract it, cd to the directory with the .tar.gz suffix, and run the installer
 cd "${tarball%/*}" || fail
 tar xf "$tarball" || fail "Error extracting PE tarball"
-cd "${tarball%.tar.gz*}" || fail
+cd "${tarball%.tar*}" || fail
 chmod +x ./puppet-enterprise-installer
 
 ./puppet-enterprise-installer -y -c "$pe_conf" || fail "Error installing PE"
