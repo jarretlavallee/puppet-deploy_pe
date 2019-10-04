@@ -57,7 +57,9 @@ plan deploy_pe::provision_master (
 
     if $version != undef or $download_url != undef {
       # Download the tarball
-      $package_name = deploy_pe::master_package_name($master_facts, $version)
+      if $version != undef {
+        $package_name = deploy_pe::master_package_name($master_facts, $version)
+      }
       $url = $download_url ? {
         undef => "${base_url}/${$version}/${package_name}",
         default => $download_url,
