@@ -27,6 +27,7 @@ plan deploy_pe::provision_master (
   Optional[String] $download_url = undef, # A specific URL to download the tarball
   Optional[String] $installer_tarball = undef, # The local tarball on the machine to use instead of downloading PE
   Optional[Hash] $pe_settings = {password => 'puppetlabs'}, # See the settings in pe.conf.epp
+  Optional[Boolean] $nightly = false, # If this is a nightly buildversion
 ) {
 
   # TODO: Format output
@@ -58,10 +59,24 @@ plan deploy_pe::provision_master (
     if $version != undef or $download_url != undef {
       # Download the tarball
       if $version != undef {
-        $package_name = deploy_pe::master_package_name($master_facts, $version)
+        if $nightly {
+          $nightly_output = run_task(
+            'deploy_pe::nightly',
+            'localhost',
+            'Determining the latest PE nightly version',
+            url => $base_url,
+            release => $version,
+            '_run_as' => system::env('USER')
+          )
+          $package_name = deploy_pe::master_package_name($master_facts, $nightly_output.first.value['latest'], undef)
+          $url_extra = 'ci-ready/'
+        } else {
+          $package_name = deploy_pe::master_package_name($master_facts, $version)
+          $url_extra = undef
+        }
       }
       $url = $download_url ? {
-        undef => "${base_url}/${$version}/${package_name}",
+        undef => "${base_url}/${$version}/${url_extra}${package_name}",
         default => $download_url,
       }
       $tarball = run_task(
