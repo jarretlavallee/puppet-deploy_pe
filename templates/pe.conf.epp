@@ -40,18 +40,23 @@
     "XX:PermSize": "=64m",
     "XX:+UseG1GC": ""
   }
+  "puppet_enterprise::puppetdb::read_maximum_pool_size": 4
+  "puppet_enterprise::puppetdb::write_maximum_pool_size": 2
   "puppet_enterprise::profile::console::java_args": {
-    "Xmx": "64m",
+    "Xmx": "128m",
     "Xms": "64m",
     "XX:MaxPermSize": "=96m",
     "XX:PermSize": "=64m",
     "XX:+UseG1GC": ""
   }
+  "puppet_enterprise::trapperkeeper::database_settings::activity::maximum_pool_size": 2
+  "puppet_enterprise::trapperkeeper::database_settings::classifier::maximum_pool_size": 2
+  "puppet_enterprise::trapperkeeper::database_settings::rbac::maximum_pool_size": 2
   "puppet_enterprise::profile::console::delayed_job_workers": 1
   "puppet_enterprise::profile::database::shared_buffers": "4MB"
   "puppet_enterprise::profile::orchestrator::java_args": {
-    "Xmx": "64m",
-    "Xms": "64m",
+    "Xmx": "128m",
+    "Xms": "128m",
     "XX:+UseG1GC": ""
   }
 <%- } -%>
