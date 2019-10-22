@@ -59,6 +59,15 @@ plan deploy_pe::provision_master (
     if $version != undef or $download_url != undef {
       # Download the tarball
       if $version != undef {
+        # Determine if FIPS is configured
+        $fips_output = run_command(
+          'sysctl crypto.fips_enabled',
+          $target,
+          'Determining if FIPS is enabled',
+          '_catch_errors' => true
+        )
+        $fips_enabled = $fips_output.first.value['stdout'] =~ /crypto\.fips_enabled\s*=\s*1/
+
         if $nightly {
           $nightly_output = run_task(
             'deploy_pe::nightly',
@@ -68,10 +77,10 @@ plan deploy_pe::provision_master (
             release => $version,
             '_run_as' => system::env('USER')
           )
-          $package_name = deploy_pe::master_package_name($master_facts, $nightly_output.first.value['latest'], undef)
+          $package_name = deploy_pe::master_package_name($master_facts, $nightly_output.first.value['latest'], $fips_enabled, undef)
           $url_extra = 'ci-ready/'
         } else {
-          $package_name = deploy_pe::master_package_name($master_facts, $version)
+          $package_name = deploy_pe::master_package_name($master_facts, $version, $fips_enabled)
           $url_extra = undef
         }
       }
