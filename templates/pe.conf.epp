@@ -25,7 +25,7 @@
   # Lab Performance tuning for 4GB of memory
   "puppet_enterprise::profile::amq::broker::heap_mb": "96"
   "puppet_enterprise::master::puppetserver::jruby_max_active_instances": 1
-  "puppet_enterprise::master::puppetserver:reserved_code_cache": "96m"
+  "puppet_enterprise::master::puppetserver::reserved_code_cache": "96m"
   "puppet_enterprise::profile::master::java_args": {
     "Xmx": "384m",
     "Xms": "128m",
