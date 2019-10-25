@@ -18,6 +18,7 @@ plan deploy_pe::decom_agent (
           'Finding the certname for the agent',
           action => 'get',
           setting => 'certname',
+          section => 'agent',
           '_catch_errors' => true
         ).find($target.name).value['status']
       # If the node is already gone, guess what the hostname is based on the name of the targetspec

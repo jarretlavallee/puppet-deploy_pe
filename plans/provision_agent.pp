@@ -60,7 +60,8 @@ plan deploy_pe::provision_agent (
           $target,
           'Getting the certname for the agent',
           action => 'get',
-          setting => 'certname'
+          setting => 'certname',
+          section => 'agent'
         ).find($target.name).value['status']
         without_default_logging() || { run_plan(facts, nodes => $target) }
         run_task(
