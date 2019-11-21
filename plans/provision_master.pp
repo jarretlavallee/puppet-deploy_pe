@@ -60,13 +60,17 @@ plan deploy_pe::provision_master (
       # Download the tarball
       if $version != undef {
         # Determine if FIPS is configured
-        $fips_output = run_command(
-          'sysctl crypto.fips_enabled',
-          $target,
-          'Determining if FIPS is enabled',
-          '_catch_errors' => true
-        )
-        $fips_enabled = $fips_output.first.value['stdout'] =~ /crypto\.fips_enabled\s*=\s*1/
+        if versioncmp($version, '2019.2.0') >= 0 {
+          $fips_output = run_command(
+            'sysctl crypto.fips_enabled',
+            $target,
+            'Determining if FIPS is enabled',
+            '_catch_errors' => true
+          )
+          $fips_enabled = $fips_output.first.value['stdout'] =~ /crypto\.fips_enabled\s*=\s*1/
+        } else { 
+          $fips_enabled = false
+        }
 
         if $nightly {
           $nightly_output = run_task(
