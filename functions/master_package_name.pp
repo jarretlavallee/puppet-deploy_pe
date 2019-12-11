@@ -8,9 +8,10 @@
 function deploy_pe::master_package_name(
   Hash $node_facts,
   String $version,
+  Boolean $fips = false,
   Optional[String] $extension = '.gz',
 ) >> String {
-  $platform_tag = deploy_pe::platform_tag($node_facts)
+  $platform_tag = deploy_pe::platform_tag($node_facts, false, $fips)
 
   "puppet-enterprise-${version}-${platform_tag}.tar${extension}"
 }

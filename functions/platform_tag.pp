@@ -8,6 +8,7 @@
 function deploy_pe::platform_tag (
   Hash $node_facts,
   Boolean $underscores = false,
+  Boolean $fips = false,
 ) >> String {
   $arch_default = 'x86_64'
   $family = $node_facts['os']['family'].downcase
@@ -16,7 +17,11 @@ function deploy_pe::platform_tag (
   case $family {
     'redhat': {
       # the pe_repo class is different for fedora
-      $osname = $name ? { 'fedora' => 'fedora', default => 'el' }
+      if $fips {
+        $osname = 'redhatfips'
+      } else {
+        $osname = $name ? { 'fedora' => 'fedora', default => 'el' }
+      }
       $version = $node_facts['os']['release']['major']
       $arch = $node_facts['architecture'] ? { undef => $arch_default, default => $node_facts['architecture'] }
     }
