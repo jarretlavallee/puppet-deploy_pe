@@ -2,20 +2,20 @@
 #
 # @param master
 #  The TargetSpec for the Master from which to use the installer script
-# @param nodes
+# @param targets
 #  The TargetSpec of one or more compilers to be installed
 # @example Install the PE agent on a node and configure it as a compiler
-#  bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-compiler'
+#  bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-compiler'
 plan deploy_pe::provision_compiler (
   TargetSpec $master,
-  TargetSpec $nodes,
+  TargetSpec $targets,
   #  Optional[Array[Pattern[/\\w+=\\w+/]]] $custom_attribute = undef,
   #  Optional[Array[Pattern[/\\w+=\\w+/]]] $extension_request = undef,
   #  Optional[String] $dns_alt_names = undef,
   #  Optional[String] $environment = undef,
   ) {
-    get_targets($nodes).each |$target| {
-      run_plan('deploy_pe::provision_agent', master => $master, nodes => $target)
+    get_targets($targets).each |$target| {
+      run_plan('deploy_pe::provision_agent', master => $master, targets => $target)
       $target_certname = run_task(
         'puppet_conf',
         $target,

@@ -2,16 +2,16 @@
 #
 # @param master
 #  The TargetSpec for the Master to use to run the node purge on
-# @param nodes
-#  The TargetSpec of one or more nodes to be removed from the environment
+# @param targets
+#  The TargetSpec of one or more targets to be removed from the environment
 # @example Decommission a node
-#  bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
+#  bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-agent'
 plan deploy_pe::decom_agent (
   TargetSpec $master,
-  TargetSpec $nodes,
+  TargetSpec $targets,
 ) {
     # Build up an array of either the certname or guessed hostname of the targets
-    $agents = get_targets($nodes).map |$target| {
+    $agents = get_targets($targets).map |$target| {
       $target_certname = run_task(
           'puppet_conf',
           $target,

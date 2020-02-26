@@ -4,6 +4,6 @@
 declare PT__installdir
 source "$PT__installdir/deploy_pe/files/common.sh"
 
-latest=$(curl ${url}/${release}/ci-ready/LATEST)
+latest=$(curl "${url}"/"${release}"/ci-ready/LATEST)
 
 success "{ \"latest\": \"${latest}\" }"
