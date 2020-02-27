@@ -1,6 +1,6 @@
 # @summary A plan to install a new PE master
 #
-# @param nodes
+# @param targets
 #  The TargetSpec of one or more masters to be installed
 # @param version
 #  The PE version to download from the $base_url.
@@ -19,9 +19,9 @@
 #  The most common setting will be the `password`
 #  All other settings can be found in the `templates/pe.conf.epp`
 # @example Install a 2019.1.1 PE master on a node using `puppetlabs` as the password
-#  bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --nodes 'pe-master'
+#  bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --targets 'pe-master'
 plan deploy_pe::provision_master (
-  TargetSpec $nodes,
+  TargetSpec $targets,
   Optional[String] $version = undef, # Version of PE to download
   Optional[String] $base_url = 'https://pm.puppetlabs.com/puppet-enterprise', # The base URL to download PE from
   Optional[String] $download_url = undef, # A specific URL to download the tarball
@@ -38,9 +38,9 @@ plan deploy_pe::provision_master (
     fail('You can either version and base_url to download a new tarball or installer_tarball to use one on the target system')
   }
 
-  notice('Updating facts for nodes')
-  without_default_logging() || { run_plan(facts, nodes => $nodes) }
-  get_targets($nodes).each |$target| {
+  notice('Updating facts for targets')
+  without_default_logging() || { run_plan(facts, targets => $targets) }
+  get_targets($targets).each |$target| {
     $master_facts = get_targets($target)[0].facts()
 
     $pe_conf_content = epp(
@@ -68,7 +68,7 @@ plan deploy_pe::provision_master (
             '_catch_errors' => true
           )
           $fips_enabled = $fips_output.first.value['stdout'] =~ /crypto\.fips_enabled\s*=\s*1/
-        } else { 
+        } else {
           $fips_enabled = false
         }
 

@@ -40,7 +40,7 @@ To use this module, install it in the `boltdir` and leverage the plans in the se
 Install a 2019.1.1 PE master with the `admin` password set to `puppetlabs`.
 
 ```bash
-bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --nodes 'pe-master'
+bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --targets 'pe-master'
 ```
 
 The plan above will download the `2019.1.1` PE installer package, create a `pe.conf` with the password setting, and run the installer script to install PE.
@@ -48,7 +48,7 @@ The plan above will download the `2019.1.1` PE installer package, create a `pe.c
 Install an agent from the PE master.
 
 ```bash
-bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
+bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-agent'
 ```
 
 The plan above will install the agent using the installer script from the master after ensuring that the agent packages are available on the master. It will then sign the agent's certificate on the master.
@@ -56,7 +56,7 @@ The plan above will install the agent using the installer script from the master
 Install a compiler
 
 ```bash
-bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-compiler'
+bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-compiler'
 ```
 
 The plan above will install the agent using the installer script from the master, pin the node to the `PE Master` node group, and then run the agent until there are no changes.
@@ -64,7 +64,7 @@ The plan above will install the agent using the installer script from the master
 Purge a node from the master
 
 ```bash
-bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
+bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-agent'
 ```
 
 The plan above will purge the node from the master. If the node is already offline it will try to guess the node name.

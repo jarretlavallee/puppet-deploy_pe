@@ -132,7 +132,7 @@ A comma-separated list of agent certificate names
 
 Data type: `String`
 
-The name of the node group to pin the nodes to
+The name of the node group to pin the targets to
 
 ### run_agent
 
@@ -165,7 +165,7 @@ A plan to purge an agent on the master
 ##### Decommission a node
 
 ```puppet
-bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
+bolt plan run 'deploy_pe::decom_agent' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-agent'
 ```
 
 #### Parameters
@@ -178,11 +178,11 @@ Data type: `TargetSpec`
 
 The TargetSpec for the Master to use to run the node purge on
 
-##### `nodes`
+##### `targets`
 
 Data type: `TargetSpec`
 
-The TargetSpec of one or more nodes to be removed from the environment
+The TargetSpec of one or more targets to be removed from the environment
 
 ### deploy_pe::provision_agent
 
@@ -193,7 +193,7 @@ A plan to install an agent from the master
 ##### Install the PE agent on a node
 
 ```puppet
-bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
+bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-agent'
 ```
 
 #### Parameters
@@ -206,11 +206,11 @@ Data type: `TargetSpec`
 
 The TargetSpec for the Master from which to use the installer script
 
-##### `nodes`
+##### `targets`
 
 Data type: `TargetSpec`
 
-The TargetSpec of one or more nodes to be installed
+The TargetSpec of one or more targets to be installed
 
 ### deploy_pe::provision_compiler
 
@@ -221,7 +221,7 @@ A plan to install an compiler from the master
 ##### Install the PE agent on a node and configure it as a compiler
 
 ```puppet
-bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-compiler'
+bolt plan run 'deploy_pe::provision_compiler' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-compiler'
 ```
 
 #### Parameters
@@ -234,7 +234,7 @@ Data type: `TargetSpec`
 
 The TargetSpec for the Master from which to use the installer script
 
-##### `nodes`
+##### `targets`
 
 Data type: `TargetSpec`
 
@@ -249,14 +249,14 @@ A plan to install a new PE master
 ##### Install a 2019.1.1 PE master on a node using `puppetlabs` as the password
 
 ```puppet
-bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --nodes 'pe-master'
+bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --targets 'pe-master'
 ```
 
 #### Parameters
 
 The following parameters are available in the `deploy_pe::provision_master` plan.
 
-##### `nodes`
+##### `targets`
 
 Data type: `TargetSpec`
 

@@ -2,13 +2,13 @@
 #
 # @param master
 #  The TargetSpec for the Master from which to use the installer script
-# @param nodes
-#  The TargetSpec of one or more nodes to be installed
+# @param targets
+#  The TargetSpec of one or more targets to be installed
 # @example Install the PE agent on a node
-#  bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --nodes 'pe-agent'
+#  bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-agent'
 plan deploy_pe::provision_agent (
   TargetSpec $master,
-  TargetSpec $nodes,
+  TargetSpec $targets,
 #  Optional[Array[Pattern[/\\w+=\\w+/]]] $custom_attribute = undef,
 #  Optional[Array[Pattern[/\\w+=\\w+/]]] $extension_request = undef,
 #  Optional[String] $dns_alt_names = undef,
@@ -19,15 +19,15 @@ plan deploy_pe::provision_agent (
     # TODO: Handle errors
 
     $master.apply_prep
-    notice('Updating facts for nodes')
-    without_default_logging() || { run_plan(facts, nodes => $nodes) }
-    get_targets($nodes).each |$target| {
+    notice('Updating facts for targets')
+    without_default_logging() || { run_plan(facts, targets => $targets) }
+    get_targets($targets).each |$target| {
       $target_facts = $target.facts()
       if $target_facts['aio_agent_version'] == undef {
         # Update Master facts if needed
         if get_targets($master)[0].facts()['fqdn'] == undef {
           notice("Updating facts for ${master}")
-          without_default_logging() || { run_plan(facts, nodes => $master) }
+          without_default_logging() || { run_plan(facts, targets => $master) }
         }
         $master_fqdn = get_targets($master)[0].facts()['fqdn']
         if $master_fqdn == undef {
@@ -63,7 +63,7 @@ plan deploy_pe::provision_agent (
           setting => 'certname',
           section => 'agent'
         ).find($target.name).value['status']
-        without_default_logging() || { run_plan(facts, nodes => $target) }
+        without_default_logging() || { run_plan(facts, targets => $target) }
         run_task(
           'sign_cert::sign_cert',
           $master,
