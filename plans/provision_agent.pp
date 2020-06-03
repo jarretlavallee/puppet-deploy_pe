@@ -9,6 +9,7 @@
 plan deploy_pe::provision_agent (
   TargetSpec $master,
   TargetSpec $targets,
+  Optional[String[1]] $compiler_pool_address = undef,
 #  Optional[Array[Pattern[/\\w+=\\w+/]]] $custom_attribute = undef,
 #  Optional[Array[Pattern[/\\w+=\\w+/]]] $extension_request = undef,
 #  Optional[String] $dns_alt_names = undef,
@@ -29,7 +30,10 @@ plan deploy_pe::provision_agent (
           notice("Updating facts for ${master}")
           without_default_logging() || { run_plan(facts, targets => $master) }
         }
-        $master_fqdn = get_targets($master)[0].facts()['fqdn']
+        $master_fqdn = $compiler_pool_address ? {
+          undef => get_targets($master)[0].facts()['fqdn'],
+          default => $compiler_pool_address,
+        }
         if $master_fqdn == undef {
           fail_plan("Unable to get Master FQDN while bootstrapping ${target.name}. Is it online and configured?")
         }

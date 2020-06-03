@@ -12,13 +12,13 @@
 
 * [`download_file`](#download_file): Download a file to a specified folder
 * [`install_pe`](#install_pe): Install PE on a server
+* [`nightly`](#nightly): Get the latest version
 * [`pin_node_group`](#pin_node_group): Pin node(s) to a specified node group
 * [`run_agent`](#run_agent): Run the Puppet agent until there are no changes
 
 **Plans**
 
 * [`deploy_pe::decom_agent`](#deploy_pedecom_agent): A plan to purge an agent on the master
-* [`deploy_pe::provision_agent`](#deploy_peprovision_agent): A plan to install an agent from the master
 * [`deploy_pe::provision_compiler`](#deploy_peprovision_compiler): A plan to install an compiler from the master
 * [`deploy_pe::provision_master`](#deploy_peprovision_master): A plan to install a new PE master
 
@@ -30,7 +30,7 @@ Type: Puppet Language
 
 Generate the PE installer package name
 
-#### `deploy_pe::master_package_name(Hash $node_facts, String $version)`
+#### `deploy_pe::master_package_name(Hash $node_facts, String $version, Boolean $fips = false, Optional[String] $extension = '.gz')`
 
 Generate the PE installer package name
 
@@ -48,13 +48,25 @@ Data type: `String`
 
 The version of PE
 
+##### `fips`
+
+Data type: `Boolean`
+
+
+
+##### `extension`
+
+Data type: `Optional[String]`
+
+
+
 ### deploy_pe::platform_tag
 
 Type: Puppet Language
 
 Generate the PE naming for the OS version
 
-#### `deploy_pe::platform_tag(Hash $node_facts, Boolean $underscores = false)`
+#### `deploy_pe::platform_tag(Hash $node_facts, Boolean $underscores = false, Boolean $fips = false)`
 
 Generate the PE naming for the OS version
 
@@ -71,6 +83,12 @@ A hash of facts that will be used to get the OS version
 Data type: `Boolean`
 
 A boolean to enable to use of underscores instead of dashes for the seperator
+
+##### `fips`
+
+Data type: `Boolean`
+
+
 
 ## Tasks
 
@@ -114,6 +132,26 @@ Data type: `Optional[String[1]]`
 
 The directory to extract the tarball. Defaults to the directory containing the tarball
 
+### nightly
+
+Get the latest version
+
+**Supports noop?** false
+
+#### Parameters
+
+##### `url`
+
+Data type: `String[1]`
+
+The HTTP/HTTPS URL to get the latest from
+
+##### `release`
+
+Data type: `String[1]`
+
+The release version to get the latest from
+
 ### pin_node_group
 
 Pin node(s) to a specified node group
@@ -132,7 +170,7 @@ A comma-separated list of agent certificate names
 
 Data type: `String`
 
-The name of the node group to pin the targets to
+The name of the node group to pin the nodes to
 
 ### run_agent
 
@@ -183,34 +221,6 @@ The TargetSpec for the Master to use to run the node purge on
 Data type: `TargetSpec`
 
 The TargetSpec of one or more targets to be removed from the environment
-
-### deploy_pe::provision_agent
-
-A plan to install an agent from the master
-
-#### Examples
-
-##### Install the PE agent on a node
-
-```puppet
-bolt plan run 'deploy_pe::provision_agent' --run-as 'root' --params '{"master":"pe-master"}' --targets 'pe-agent'
-```
-
-#### Parameters
-
-The following parameters are available in the `deploy_pe::provision_agent` plan.
-
-##### `master`
-
-Data type: `TargetSpec`
-
-The TargetSpec for the Master from which to use the installer script
-
-##### `targets`
-
-Data type: `TargetSpec`
-
-The TargetSpec of one or more targets to be installed
 
 ### deploy_pe::provision_compiler
 
@@ -307,4 +317,12 @@ The most common setting will be the `password`
 All other settings can be found in the `templates/pe.conf.epp`
 
 Default value: {password => 'puppetlabs'}
+
+##### `nightly`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: `false`
 
