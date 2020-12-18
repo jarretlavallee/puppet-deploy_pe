@@ -42,7 +42,7 @@ plan deploy_pe::provision_agent (
         # The pe_repo class for Ubuntu does not have the decimals in the version
         $platform = regsubst(deploy_pe::platform_tag($target_facts, true), '\.', '')
         run_command(
-          "/opt/puppetlabs/puppet/bin/puppet apply -e \"include pe_repo::platform::${platform}\"",
+          "/opt/puppetlabs/puppet/bin/puppet apply -e \"include pe_repo::platform::${platform}\"; package { 'pe-java11': }",
           $master,
           "Ensuring ${platform} agent packages are available on ${master_fqdn}",
         )
