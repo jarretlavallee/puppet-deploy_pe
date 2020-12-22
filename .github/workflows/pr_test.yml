@@ -78,7 +78,7 @@ jobs:
     strategy:
       fail-fast: false
         #matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
-      matrix: ${{fromJson("{}")}}
+      matrix: ${{fromJson({})}}
 
     env:
       BUILDEVENT_FILE: '../buildevents.txt'
