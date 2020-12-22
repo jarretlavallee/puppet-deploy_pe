@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}
+      empty_matrix: ${{ steps.check-matrix.outputs.empty_matrix }}
 
     steps:
     - name: "Honeycomb: Start recording"
@@ -28,17 +29,17 @@ jobs:
 
     - name: Checkout Source
       uses: actions/checkout@v2
-      if: ${{ github.repository_owner == 'puppetlabs' }}
+      if: ${{ github.repository_owner == 'jarretlavallee' }}
 
     - name: Activate Ruby 2.7
       uses: actions/setup-ruby@v1
-      if: ${{ github.repository_owner == 'puppetlabs' }}
+      if: ${{ github.repository_owner == 'jarretlavallee' }}
       with:
         ruby-version: "2.7"
 
     - name: Cache gems
       uses: actions/cache@v2
-      if: ${{ github.repository_owner == 'puppetlabs' }}
+      if: ${{ github.repository_owner == 'jarretlavallee' }}
       with:
         path: vendor/gems
         key: ${{ runner.os }}-${{ github.event_name }}-${{ hashFiles('**/Gemfile') }}
@@ -47,7 +48,7 @@ jobs:
           ${{ runner.os }}-
 
     - name: Install gems
-      if: ${{ github.repository_owner == 'puppetlabs' }}
+      if: ${{ github.repository_owner == 'jarretlavallee' }}
       run: |
         buildevents cmd $TRACE_ID $STEP_ID 'bundle config path vendor/gems' -- bundle config path vendor/gems
         buildevents cmd $TRACE_ID $STEP_ID 'bundle config jobs 8' -- bundle config jobs 8
@@ -57,13 +58,21 @@ jobs:
 
     - name: Setup Acceptance Test Matrix
       id: get-matrix
-      if: ${{ github.repository_owner == 'jarretlavallee' }}
       run: |
-        if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
+        if [ '${{ github.repository_owner }}' == 'jarretlavallee' ]; then
           buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata
         else
           echo  "::set-output name=matrix::{}"
         fi
+    - name: Check Matrix
+      id: check-matrix
+      run: |
+        if [ "${{ matrix }}" = "{}" ]; then
+          echo  "::set-output name=empty_matrix::true"
+        else
+          echo  "::set-output name=empty_matrix::false"
+        fi
+
 
     - name: "Honeycomb: Record setup time"
       if: ${{ always() }}
@@ -73,6 +82,7 @@ jobs:
   Acceptance:
     needs:
       - setup_matrix
+    if: ${{ needs.setup_matrix.outputs.empty_matrix == 'false' }}
 
     runs-on: ubuntu-20.04
     strategy:

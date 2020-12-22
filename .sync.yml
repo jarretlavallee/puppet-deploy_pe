@@ -1,4 +1,6 @@
 ---
+common:
+  owner: jarretlavallee
 appveyor.yml:
   delete: true
 .gitlab-ci.yml:
