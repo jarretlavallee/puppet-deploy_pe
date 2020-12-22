@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}
-      empty_matrix: ${{ steps.check-matrix.outputs.empty_matrix }}
 
     steps:
     - name: "Honeycomb: Start recording"
@@ -64,15 +63,6 @@ jobs:
         else
           echo  "::set-output name=matrix::{}"
         fi
-    - name: Check Matrix
-      id: check-matrix
-      run: |
-        if [ "${{ needs.setup_matrix.outputs.matrix }}" = "{}" ]; then
-          echo  "::set-output name=empty_matrix::true"
-        else
-          echo  "::set-output name=empty_matrix::false"
-        fi
-
 
     - name: "Honeycomb: Record setup time"
       if: ${{ always() }}
@@ -82,7 +72,7 @@ jobs:
   Acceptance:
     needs:
       - setup_matrix
-    if: ${{ needs.setup_matrix.outputs.empty_matrix == 'false' }}
+    if: ${{ needs.setup_matrix.outputs.matrix != '{}' }}
 
     runs-on: ubuntu-20.04
     strategy:
@@ -94,7 +84,6 @@ jobs:
 
     steps:
     - run: |
-        echo '${{ matrix }}'
         echo 'platform=${{ matrix.platform }}' >> $BUILDEVENT_FILE
         echo 'collection=${{ matrix.collection }}' >> $BUILDEVENT_FILE
 
