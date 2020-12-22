@@ -33,3 +33,7 @@ Rakefile:
       rvm: 2.4.4
     - env: PUPPET_GEM_VERSION="~> 4.0" CHECK=parallel_spec
       rvm: 2.1.9
+.github/workflows/nightly.yml:
+  unmanaged: false
+.github/workflows/pr_test.yml:
+  unmanaged: false
