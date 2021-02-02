@@ -1,6 +1,6 @@
 {
   "name": "jarretlavallee-deploy_pe",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "jarretlavallee",
   "summary": "Install PE lab instances with bolt plans",
   "license": "Apache-2.0",
