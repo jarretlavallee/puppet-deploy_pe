@@ -1,6 +1,11 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## Release 0.2.1
+
+**Bug Fixes**
+  * Fix an issue preventing the provisioning agents in 2019.8.4
+
 ## Release 0.2.0
 
 **Breaking Changes**
