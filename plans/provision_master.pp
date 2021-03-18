@@ -12,14 +12,22 @@
 #  A direct HTTP link to the installer tarball.
 #  The `$version`, `$download_url`, or `$installer_tarball` are mutually exclusive. Please choose only one option.
 # @param installer_tarball
-#  A path to the installer tarball on the target master. This option assumes that the tarball has already been downloaded on the target machine.
+#  A path to the installer tarball on the target master. This option assumes that the tarball has already been
+#    downloaded on the target machine.
 #  The `$version`, `$download_url`, or `$installer_tarball` are mutually exclusive. Please choose only one option.
 # @param pe_settings
 #  A hash of the settings to be used in the `pe.conf` during the installation.
 #  The most common setting will be the `password`
 #  All other settings can be found in the `templates/pe.conf.epp`
+# @param nightly
+#  A boolean used to determine if a nightly PE build should be used. Must be used on Puppet's VPN
+#  Defaults to false.
+# @param run_agent
+#  A boolean used to determine if the agent should be run on the primary as a part of the provisioning
+#  Defaults to true.
 # @example Install a 2019.1.1 PE master on a node using `puppetlabs` as the password
-#  bolt plan run 'deploy_pe::provision_master' --run-as 'root' --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --targets 'pe-master'
+#  bolt plan run 'deploy_pe::provision_master' --run-as 'root' \
+#    --params '{"version":"2019.1.1","pe_settings":{"password":"puppetlabs"}}' --targets 'pe-master'
 plan deploy_pe::provision_master (
   TargetSpec $targets,
   Optional[String] $version = undef, # Version of PE to download
@@ -28,6 +36,7 @@ plan deploy_pe::provision_master (
   Optional[String] $installer_tarball = undef, # The local tarball on the machine to use instead of downloading PE
   Optional[Hash] $pe_settings = {password => 'puppetlabs'}, # See the settings in pe.conf.epp
   Optional[Boolean] $nightly = false, # If this is a nightly buildversion
+  Optional[Boolean] $run_agent = true, # If the puppet agent should be run as a part of the provisioning
 ) {
 
   # TODO: Format output
@@ -112,6 +121,8 @@ plan deploy_pe::provision_master (
       pe_conf => $tmp_dest
     )
 
-    run_task('deploy_pe::run_agent', $target)
+    if $run_agent {
+      run_task('deploy_pe::run_agent', $target)
+    }
   }
 }
