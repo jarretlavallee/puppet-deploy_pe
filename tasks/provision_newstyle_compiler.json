@@ -1,12 +1,12 @@
 {
   "puppet_task_version": 1,
   "supports_noop": false,
-  "description": "Provision New Style Compiler(s)",
+  "description": "Provision a new-style compiler",
   "parameters": {
     "compiler": {
-      "description": "The certname of compiler to be provisioned",
-      "type": "Pattern[/^([A-Za-z0-9._-]+,?)+$/]"
+      "description": "The certname of a compiler to be provisioned",
+      "type": "String"
     }
   },
- "files": ["deploy_pe/files/common.sh"], "input_method": "environment"
+  "files": ["deploy_pe/files/common.sh"], "input_method": "environment"
 }

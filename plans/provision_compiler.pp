@@ -24,16 +24,15 @@ plan deploy_pe::provision_compiler (
         action => 'get',
         setting => 'certname'
       ).find($target.name).value['status']
-  
-    if $legacy_compiler == true {
-      run_task('deploy_pe::pin_node_group', $master, node_group => 'PE Master', agent_certnames => $target_certname)
-      run_task('deploy_pe::run_agent', $target)
-      run_task('deploy_pe::run_agent', $master)
-    } else
-    {
-      run_task('deploy_pe::pin_node_group', $master, node_group => 'PE Infrastructure Agent', agent_certnames => $target_certname)
-      run_task('deploy_pe::run_agent', $target)
-      run_task('deploy_pe::provision_newstyle_compiler', $master, compiler => $target_certname)
-    }
+      if $legacy_compiler == true {
+        run_task('deploy_pe::pin_node_group', $master, node_group => 'PE Master', agent_certnames => $target_certname)
+        run_task('deploy_pe::run_agent', $target)
+        run_task('deploy_pe::run_agent', $master)
+      } else
+      {
+        run_task('deploy_pe::pin_node_group', $master, node_group => 'PE Infrastructure Agent', agent_certnames => $target_certname)
+        run_task('deploy_pe::run_agent', $target)
+        run_task('deploy_pe::provision_newstyle_compiler', $master, compiler => $target_certname)
+      }
     }
   }
