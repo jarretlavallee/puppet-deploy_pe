@@ -6,6 +6,14 @@
     "compiler": {
       "description": "The certname of a compiler to be provisioned",
       "type": "String"
+    },
+    "rbac_user": {
+      "description": "The RBAC username to run puppet infra provision command",
+      "type": "String"
+    },
+    "rbac_password": {
+      "description": "The password for the rbac_user",
+      "type": "String"
     }
   },
   "files": ["deploy_pe/files/common.sh"], "input_method": "environment"
