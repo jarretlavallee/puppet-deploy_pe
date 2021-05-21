@@ -8,7 +8,8 @@
   "project_page": "https://github.com/jarretlavallee/puppet-deploy_pe",
   "issues_url": "https://github.com/jarretlavallee/puppet-deploy_pe/issues",
   "dependencies": [
-
+    {"name": "puppetlabs/bootstrap", "version_requirement": "2.1.0"},
+    {"name": "m0dular/sign_cert", "version_requirement": "0.1.1"}
   ],
   "operatingsystem_support": [
     {
