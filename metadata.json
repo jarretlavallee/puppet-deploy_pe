@@ -8,8 +8,26 @@
   "project_page": "https://github.com/jarretlavallee/puppet-deploy_pe",
   "issues_url": "https://github.com/jarretlavallee/puppet-deploy_pe/issues",
   "dependencies": [
-    {"name": "puppetlabs/bootstrap", "version_requirement": "2.1.0"},
-    {"name": "m0dular/sign_cert", "version_requirement": "0.1.1"}
+    {
+      "name": "puppetlabs-bootstrap",
+      "version_requirement": "2.1.0"
+    },
+    {
+      "name": "m0dular-sign_cert",
+      "version_requirement": "0.1.1"
+    },
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 1.0.0 < 8.0.0"
+    },
+    {
+      "name": "puppetlabs-puppet_conf",
+      "version_requirement": ">= 0.3.0 < 2.0.0"
+    },
+    {
+      "name": "nate-purge_node",
+      "version_requirement": ">= 1.0.0 < 2.0.0"
+    }
   ],
   "operatingsystem_support": [
     {
@@ -50,7 +68,7 @@
       "version_requirement": ">= 4.10.0 < 8.0.0"
     }
   ],
-  "pdk-version": "2.1.0",
+  "pdk-version": "2.1.1",
   "template-url": "https://github.com/puppetlabs/pdk-templates#main",
-  "template-ref": "heads/main-0-ge97c50f"
+  "template-ref": "tags/2.1.1-0-g03daa92"
 }

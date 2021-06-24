@@ -42,7 +42,7 @@ plan deploy_pe::provision_agent (
         # The pe_repo class for Ubuntu does not have the decimals in the version
         $platform = regsubst(deploy_pe::platform_tag($target_facts, true), '\.', '')
         run_command(
-          "/opt/puppetlabs/bin/puppet apply -e 'class{\"pe_repo\": enable_bulk_pluginsync => false, enable_windows_bulk_pluginsync => false }; include pe_repo::platform::${platform}'",
+          "/opt/puppetlabs/bin/puppet apply -e 'class{\"pe_repo\": enable_bulk_pluginsync => false, enable_windows_bulk_pluginsync => false }; include pe_repo::platform::${platform}'", # lint:ignore:140chars
           $master,
           "Ensuring ${platform} agent packages are available on ${master_fqdn}",
         )
