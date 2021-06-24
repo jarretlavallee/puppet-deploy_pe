@@ -10,7 +10,11 @@
      "wait_time": {
         "description": "The time to wait for a running agent lock to finish. Defaults to 300",
         "type": "Optional[Integer[1]]"
-     }
+     },
+     "show_output": {
+        "description": "Optionally show the puppet agent run output to STDOUT. Defaults to true",
+        "type": "Optional[Boolean]"
+   }
   },
   "files": ["deploy_pe/files/common.sh"], "input_method": "environment"
 }
