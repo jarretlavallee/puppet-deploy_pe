@@ -2,6 +2,9 @@
 
 # shellcheck disable=SC1090,SC2027,SC2034
 
+# Set the LANG to avoid issues with the LANG from the source machine
+export LANG=en_US.UTF-8
+
 # Exit with an error message and error code, defaulting to 1
 fail() {
   # Print a stderr: entry if there were anything printed to stderr
