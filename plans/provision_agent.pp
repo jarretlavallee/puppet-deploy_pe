@@ -12,8 +12,6 @@ plan deploy_pe::provision_agent (
   Boolean    $sign_cert = true,
   Optional[Array[Pattern[/\w+=\w+/]]] $custom_attribute = undef,
   Optional[Array[Pattern[/\w+=\w+/]]] $extension_request = undef,
-#  Optional[String] $dns_alt_names = undef,
-#  Optional[String] $environment = undef,
 ) {
   # TODO: Format output
   # TODO: Check that we are running as root/Administrator.
@@ -47,14 +45,20 @@ plan deploy_pe::provision_agent (
         $master,
         "Ensuring ${platform} agent packages are available on ${master_fqdn}",
       )
+      # Only pass these parameters if they are populated
+      $_custom_attribute = $custom_attribute =~ Undef ? {
+        true => {},
+        default => { custom_attribute => $custom_attribute }
+      }
+      $_extension_request = $extension_request =~ Undef ? {
+        true => {},
+        default => { extension_request => $extension_request }
+      }
       run_task(
         $bootstrap_task,
-        $target,
+        $target, {
         master => $master_fqdn,
-        custom_attribute => $custom_attribute,
-        extension_request => $extension_request,
-#          dns_alt_names => $dns_alt_names,
-#          environment => $environment,
+        } + $_custom_attribute + $_extension_request
       )
       if $sign_cert {
         $target_certname = run_task(
